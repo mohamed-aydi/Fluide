@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fluide.ENIS – Hydraulique et hydrostatique en Python</title>
+<meta name="description" content="Fluide.ENIS : calculateurs de pression, hauteur d’eau, débit, vidange et poussée sur paroi, exécutés en Python dans le navigateur. Projet ENIS GC1.">
+<link rel="icon" href="python-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bk:#05060a;--navy:#0b1f4d;--navy2:#0f2a66;--sky:#6ec6ff;--tx:#eaf2ff;--mu:#9db4d6;--ln:rgba(110,198,255,.28);--err:#ff8a80;--ok:#7ee0a8;--serif:"Cormorant Garamond",Georgia,serif;--f:"Manrope",system-ui,sans-serif;--m:"JetBrains Mono",ui-monospace,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bk);color:var(--tx);font:16px/1.7 var(--f)}
+a{color:var(--sky)}
+:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+header{position:sticky;top:0;z-index:5;background:rgba(5,6,10,.94);border-bottom:1px solid var(--ln);backdrop-filter:blur(6px)}
+.bar{max-width:1120px;margin:auto;padding:.6rem 1.2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.6rem;color:var(--tx);text-decoration:none;font:600 1.6rem var(--serif)}
+.brand img{height:40px;width:40px;border-radius:50%}
+.brand i{color:var(--sky);font-style:normal}
+nav{display:flex;gap:.2rem;flex-wrap:wrap;margin-left:auto}
+nav a{color:var(--mu);text-decoration:none;padding:.35rem .75rem;border-bottom:2px solid transparent;font-weight:500;font-size:.95rem}
+nav a:hover{color:var(--tx)}
+nav a.on{color:var(--sky);border-color:var(--sky)}
+main{max-width:1120px;margin:auto;padding:1.5rem 1.2rem 3.5rem}
+section{display:none}
+section.on{display:block}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.12;margin:0}
+h1{font-size:clamp(2.6rem,6vw,4.4rem);margin-bottom:1rem}
+h2{font-size:2.3rem;margin-bottom:.8rem}
+h3{font-size:1.5rem;margin-bottom:.4rem}
+p{margin:.4rem 0 .9rem}
+.mu{color:var(--mu)}
+.hero{display:grid;grid-template-columns:1fr 1.05fr;gap:2.2rem;align-items:center;padding:2rem 0}
+.logos{display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem}
+.logos img{height:68px;width:68px;object-fit:contain}
+.logos img.r{border-radius:50%}
+.logos span{width:1px;height:48px;background:var(--ln)}
+.btn{display:inline-block;background:var(--sky);color:var(--bk);font:700 .98rem var(--f);border:0;border-radius:2px;padding:.7rem 1.4rem;cursor:pointer;text-decoration:none;margin-right:.5rem}
+.btn:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn.o{background:transparent;color:var(--sky);border:1px solid var(--sky)}
+.win{background:#02030a;border:1px solid var(--ln);border-radius:6px;overflow:hidden}
+.win .t{display:flex;align-items:center;gap:.5rem;background:var(--navy);padding:.45rem .8rem;font:500 .8rem var(--m);color:var(--mu)}
+.win .t img{height:18px}
+pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;font:.84rem/1.6 var(--m);color:#cfe6ff;tab-size:4}
+.k{color:#6ec6ff;font-weight:500}
+.c{color:#6f86ad;font-style:normal}
+.panel{background:linear-gradient(0deg,#08122b,#08122b);border:1px solid var(--ln);border-radius:4px;padding:1.3rem;margin-bottom:1.3rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}
+.grid .panel{margin:0;border-top:2px solid var(--sky)}
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.tabs button{background:transparent;color:var(--mu);border:1px solid var(--ln);border-radius:2px;padding:.5rem .9rem;font:500 .92rem var(--f);cursor:pointer}
+.tabs button.on{background:var(--navy2);color:var(--tx);border-color:var(--sky)}
+.fm{font:500 1.05rem var(--m);color:var(--sky);margin:.2rem 0 .6rem}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;align-items:end;margin-top:.8rem}
+label{display:block;font-size:.88rem;color:var(--mu)}
+input,select,textarea{width:100%;margin-top:.25rem;padding:.6rem .65rem;font:1rem var(--m);color:var(--tx);background:#030510;border:1px solid var(--ln);border-radius:2px}
+textarea{font-family:var(--f)}
+.kpi{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1rem}
+.kpi div{background:var(--navy);border-left:3px solid var(--sky);padding:.6rem 1rem;min-width:190px}
+.kpi span{display:block;font-size:.82rem;color:var(--mu)}
+.kpi strong{font:500 1.45rem var(--m)}
+.msg{margin-top:.7rem;font-weight:500}
+.msg.err{color:var(--err)}
+.msg.ok{color:var(--ok)}
+#status{font:500 .85rem var(--m);color:var(--mu);border:1px solid var(--ln);padding:.5rem .8rem;margin-bottom:1rem;display:flex;gap:.6rem;align-items:center}
+#status img{height:20px}
+img.plot{max-width:100%;height:auto;margin-top:1rem;border:1px solid var(--ln);background:#fff}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--ln);padding:.55rem .75rem;text-align:left;vertical-align:top}
+th{background:var(--navy);font-weight:700}
+code{font-family:var(--m);font-size:.88em;color:var(--sky)}
+.team{display:flex;gap:1rem;flex-wrap:wrap}
+.team div{flex:1 1 200px;border:1px solid var(--ln);padding:1rem;background:var(--navy)}
+.team b{font:600 1.35rem var(--serif);display:block}
+footer{border-top:1px solid var(--ln);text-align:center;padding:1.4rem 1rem;color:var(--mu);font-size:.9rem}
+footer img{height:22px;vertical-align:middle;margin:0 .3rem}
+@media(max-width:820px){.hero{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+<a class="brand" href="#accueil"><img src="enis-logo.png" alt="Logo ENIS"><span>Fluide<i>.ENIS</i></span></a>
+<nav aria-label="Navigation principale">
+<a href="#accueil">Accueil</a><a href="#calculateurs">Calculateurs</a><a href="#code">Code Python</a><a href="#python">Python appris</a><a href="#apropos">À propos</a><a href="#contact">Contact</a>
+</nav></div></header>
+
+<main>
+<section id="accueil">
+<div class="hero">
+<div>
+<div class="logos"><img class="r" src="enis-logo.png" alt="ENIS"><span></span><img src="python-logo.png" alt="Python"></div>
+<h1>L’eau, ses pressions et ses débits, calculés en Python</h1>
+<p class="mu">Du réservoir au barrage, chaque calcul de ce site est une fonction Python que vous pouvez lire, copier et exécuter. Les résultats s’affichent avec l’appel de la fonction et sa réponse brute.</p>
+<p><a class="btn" href="#calculateurs">Ouvrir les calculateurs</a><a class="btn o" href="#code">Lire le code complet</a></p>
+</div>
+<div class="win"><div class="t"><img src="python-logo.png" alt=""><span>fluide_enis.py</span></div>
+<pre id="heroCode"></pre></div>
+</div>
+
+<svg viewBox="0 0 900 190" role="img" aria-label="Schéma : réservoir de hauteur d’eau h, orifice et jet de vidange" style="width:100%;height:auto;margin:1rem 0 2rem">
+<rect x="40" y="20" width="220" height="150" fill="none" stroke="#6ec6ff" stroke-width="2"/>
+<rect x="42" y="60" width="216" height="108" fill="#0f2a66"/>
+<path d="M42 60 q27 -8 54 0 t54 0 t54 0 t54 0" fill="none" stroke="#6ec6ff" stroke-width="2"/>
+<line x1="280" y1="60" x2="280" y2="168" stroke="#9db4d6"/><text x="290" y="120" fill="#eaf2ff" font-size="15" font-family="Manrope,sans-serif">h</text>
+<rect x="260" y="150" width="60" height="12" fill="#0f2a66" stroke="#6ec6ff"/>
+<path d="M320 156 q120 -10 190 40" fill="none" stroke="#6ec6ff" stroke-width="4"/>
+<text x="350" y="40" fill="#9db4d6" font-size="15" font-family="JetBrains Mono,monospace">v = √(2·g·h)</text>
+<text x="350" y="68" fill="#9db4d6" font-size="15" font-family="JetBrains Mono,monospace">Q = Cd · A · v</text>
+<text x="590" y="40" fill="#6ec6ff" font-size="15" font-family="JetBrains Mono,monospace">p = ρ · g · h</text>
+<text x="590" y="68" fill="#9db4d6" font-size="15" font-family="JetBrains Mono,monospace">v₁·A₁ = v₂·A₂</text>
+<text x="590" y="96" fill="#9db4d6" font-size="15" font-family="JetBrains Mono,monospace">F = ρ·g·h²/2 · b</text>
+</svg>
+
+<h2>Problèmes types en génie civil</h2>
+<div class="grid">
+<div class="panel"><h3>Pression au fond d’un réservoir</h3><p class="mu">Un château d’eau de 4 m de hauteur d’eau : quelle pression supportent le radier et les joints ?</p></div>
+<div class="panel"><h3>Hauteur d’eau à partir d’un manomètre</h3><p class="mu">Un manomètre indique 250 kPa sur un réseau : à quelle hauteur d’eau cela correspond-il ?</p></div>
+<div class="panel"><h3>Débit dans une conduite</h3><p class="mu">Une conduite de 300 mm transporte l’eau à 2 m/s : quel débit en L/s, et quelle vitesse après un rétrécissement ?</p></div>
+<div class="panel"><h3>Vidange d’un bassin</h3><p class="mu">Un orifice de 10 cm au pied d’un bassin : quel débit de fuite pour 3 m d’eau ?</p></div>
+<div class="panel"><h3>Poussée sur une vanne ou un barrage</h3><p class="mu">Quelle force, et à quelle profondeur, pour 5 m d’eau sur une vanne de 3 m de large ?</p></div>
+</div>
+</section>
+
+<section id="calculateurs">
+<h2>Calculateurs</h2>
+<div id="status" role="status"><img src="python-logo.png" alt=""><span id="stx">Python se charge au premier calcul (environ 20 s, connexion internet requise).</span></div>
+<div class="tabs" id="tabs" role="tablist" aria-label="Choix du calcul"></div>
+<div class="panel" id="calc">
+<h3 id="ct"></h3>
+<p class="mu" id="cex"></p>
+<div class="fm" id="cfm"></div>
+<form id="cf" novalidate></form>
+<div class="msg" id="cm" aria-live="polite"></div>
+<div id="cr" style="display:none">
+<div class="kpi" id="ck"></div>
+<img class="plot" id="plot" alt="Diagramme des pressions sur la paroi" style="display:none">
+<p id="dlp" style="display:none"><button class="btn o" id="dl" type="button">Télécharger le graphique (PNG)</button></p>
+<div class="win" style="margin-top:1rem"><div class="t"><img src="python-logo.png" alt=""><span>Console Python</span></div><pre id="term"></pre></div>
+</div>
+</div>
+<div class="win"><div class="t"><img src="python-logo.png" alt=""><span>Code de ce calcul</span></div><pre id="csrc"></pre></div>
+</section>
+
+<section id="code">
+<h2>Code Python complet</h2>
+<p class="mu">C’est exactement le code exécuté par les calculateurs. Pour l’utiliser chez vous : <code>pip install numpy matplotlib</code>, puis <code>python fluide_enis.py</code>.</p>
+<p><button class="btn" id="cp" type="button">Copier le code</button><button class="btn o" id="dp" type="button">Télécharger fluide_enis.py</button><span class="msg" id="cpm" aria-live="polite"></span></p>
+<div class="win"><div class="t"><img src="python-logo.png" alt=""><span>fluide_enis.py</span></div><pre id="full"></pre></div>
+</section>
+
+<section id="python">
+<h2>Ce que j’ai appris en Python</h2>
+<p class="mu">Chaque ligne est une notion des TP effectivement utilisée dans le code du site.</p>
+<div class="tw"><table>
+<thead><tr><th>TP</th><th>Notion</th><th>Où dans le code</th></tr></thead>
+<tbody>
+<tr><td>TP1</td><td>Fonctions avec docstring, paramètres, <code>return</code></td><td>Toutes les formules : <code>pression_hydro</code>, <code>calc_debit</code>, <code>force_paroi</code>…</td></tr>
+<tr><td>TP1</td><td>Conditions <code>if</code> et <code>raise ValueError</code></td><td><code>verifier_positif</code> et le contrôle de <code>Cd</code> dans <code>calc_vidange</code>.</td></tr>
+<tr><td>TP1</td><td>Boucle <code>for</code>, tuples</td><td>Vérification des paramètres de <code>calc_debit</code>.</td></tr>
+<tr><td>TP1</td><td>Dictionnaires</td><td>Chaque calcul retourne un dictionnaire de résultats.</td></tr>
+<tr><td>TP1</td><td>f-strings</td><td>Messages d’erreur, légende et annotation du graphique.</td></tr>
+<tr><td>TP2</td><td><code>np.linspace</code></td><td>100 profondeurs entre 0 et h dans <code>calc_paroi</code>.</td></tr>
+<tr><td>TP2</td><td>Calcul sur tableaux, indice <code>[-1]</code></td><td><code>pression_hydro(rho, z)</code> sur tout le tableau ; <code>p[-1]</code> donne la pression au pied.</td></tr>
+<tr><td>NumPy</td><td><code>np.pi</code>, <code>np.sqrt</code></td><td>Section d’une conduite et vitesse de Torricelli.</td></tr>
+<tr><td>TP3</td><td><code>plt.subplots</code>, <code>ax.plot</code></td><td>Figure et courbe p(z).</td></tr>
+<tr><td>TP3</td><td><code>fill_betweenx</code></td><td>Variante verticale de <code>fill_between</code> pour colorer le diagramme.</td></tr>
+<tr><td>TP3</td><td><code>axhline</code>, <code>annotate</code></td><td>Centre de poussée en pointillés, annotation de la pression maximale.</td></tr>
+<tr><td>TP3</td><td><code>invert_yaxis</code>, <code>grid</code>, <code>legend</code>, <code>set_xlabel</code>, <code>set_title</code>, <code>savefig</code></td><td>Mise en forme imposée par la règle du TP : titre, axes avec unités, légende, grille discrète.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="apropos">
+<h2>À propos</h2>
+<div class="panel">
+<p>Fluide.ENIS est un projet du module <b>Algorithme et complexité</b> (GC1, ENIS, 2026/2027), encadré par <b>Mme Sirine Lamin</b>. Il applique les TP de Python (bases, NumPy, Matplotlib) à l’hydrostatique et à l’hydraulique en charge.</p>
+<h3 style="margin-top:1rem">L’équipe</h3>
+<div class="team">
+<div><b>Mohamed Aydi</b><span class="mu">Conception et développement</span></div>
+<div><b>Mockles Dhib</b><span class="mu">Équipe du projet</span></div>
+<div><b>Imen Marouani</b><span class="mu">Équipe du projet</span></div>
+</div>
+<p style="margin-top:1rem" class="mu">Le calcul s’exécute dans votre navigateur avec Pyodide : aucune donnée n’est envoyée à un serveur. Les formules supposent un fluide incompressible, sans pertes de charge. Vérifiez les résultats avant tout dimensionnement réel.</p>
+</div>
+</section>
+
+<section id="contact">
+<h2>Contact</h2>
+<div class="panel">
+<p>Écrire à <a href="mailto:med.aydi@enis.tn">med.aydi@enis.tn</a>, ou remplir le formulaire : votre application de messagerie s’ouvre avec le message prêt à envoyer.</p>
+<form id="f3" novalidate>
+<label>Nom<input id="cn" type="text" autocomplete="name"></label>
+<label>Votre e-mail<input id="ce" type="email" autocomplete="email"></label>
+<label style="grid-column:1/-1">Message<textarea id="cmsg" rows="5"></textarea></label>
+<div><button class="btn" type="submit">Ouvrir l’e-mail</button></div>
+</form>
+<div class="msg" id="m3" aria-live="polite"></div>
+</div>
+</section>
+</main>
+<footer><img src="enis-logo.png" alt="" style="border-radius:50%">Fluide.ENIS · Mohamed Aydi, Mockles Dhib, Imen Marouani · ENIS GC1 · 2026/2027<img src="python-logo.png" alt=""></footer>
+
+<script type="text/plain" id="pycode">
+import io, base64, json
+import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+
+g = 9.81  # accélération de la pesanteur, m/s²
+
+
+def verifier_positif(valeur, nom):
+    """Lève une erreur si la valeur n'est pas strictement positive."""
+    if valeur <= 0:
+        raise ValueError(f"{nom} doit être strictement positif.")
+
+
+def pression_hydro(rho, h):
+    """Pression hydrostatique p = rho*g*h en kPa (rho en kg/m3, h en m)."""
+    return rho * g * h / 1000
+
+
+def calc_pression(rho, h, p0):
+    """Pression hydrostatique et pression totale à la profondeur h."""
+    verifier_positif(rho, "ρ")
+    ph = pression_hydro(rho, h)
+    return {"p_hydro": ph, "p_totale": p0 + ph, "bar": (p0 + ph) / 100}
+
+
+def calc_hauteur(rho, p):
+    """Hauteur de fluide h = p/(rho*g) pour une pression p en kPa."""
+    verifier_positif(rho, "ρ")
+    h = p * 1000 / (rho * g)
+    return {"h": h, "bar": p / 100}
+
+
+def calc_debit(D1, v1, D2):
+    """Débit Q = v*A et continuité v1*A1 = v2*A2 (conduites circulaires, D en m)."""
+    for nom, val in (("D1", D1), ("v1", v1), ("D2", D2)):
+        verifier_positif(val, nom)
+    A1 = np.pi * D1**2 / 4
+    A2 = np.pi * D2**2 / 4
+    Q = v1 * A1
+    return {"Q_ls": Q * 1000, "Q_m3h": Q * 3600, "v2": Q / A2}
+
+
+def calc_vidange(h, d, Cd):
+    """Vidange par un orifice (Torricelli) : v = sqrt(2*g*h) et Q = Cd*A*v."""
+    verifier_positif(h, "h")
+    verifier_positif(d, "d")
+    if not 0 < Cd <= 1:
+        raise ValueError("Cd doit être compris entre 0 et 1.")
+    A = np.pi * d**2 / 4
+    v = np.sqrt(2 * g * h)
+    Q = Cd * A * v
+    return {"v": v, "Q_ls": Q * 1000, "Q_m3h": Q * 3600}
+
+
+def force_paroi(rho, h, b):
+    """Poussée sur une paroi verticale immergée depuis la surface.
+    Retourne (F en kN, profondeur du centre de poussée en m)."""
+    return rho * g * h**2 / 2 * b / 1000, 2 * h / 3
+
+
+def calc_paroi(rho, h, b):
+    """Force, centre de poussée et diagramme des pressions (PNG en base64)."""
+    for nom, val in (("ρ", rho), ("h", h), ("b", b)):
+        verifier_positif(val, nom)
+    F, yc = force_paroi(rho, h, b)
+    z = np.linspace(0, h, 100)
+    p = pression_hydro(rho, z)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.fill_betweenx(z, 0, p, alpha=0.3, color="tab:blue")
+    ax.plot(p, z, color="tab:blue", lw=2, label="p(z) = ρ·g·z")
+    ax.axhline(yc, color="goldenrod", ls="--", label=f"centre de poussée z = {yc:.2f} m")
+    ax.annotate(f"{p[-1]:.1f} kPa", xy=(p[-1], z[-1]),
+                xytext=(p[-1] * 0.45, z[-1] * 0.92),
+                arrowprops=dict(arrowstyle="->"))
+    ax.set_xlabel("Pression p (kPa)")
+    ax.set_ylabel("Profondeur z (m)")
+    ax.set_title("Diagramme des pressions sur la paroi")
+    ax.invert_yaxis()
+    ax.grid(alpha=0.3)
+    ax.legend()
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=120, bbox_inches="tight")
+    plt.close(fig)
+    return {"F": F, "yc": yc, "pmax": float(p[-1]),
+            "img": base64.b64encode(buf.getvalue()).decode()}
+</script>
+<script type="text/plain" id="pydemo">
+if __name__ == "__main__":
+    print(calc_pression(1000, 4, 0))
+    print(calc_hauteur(1000, 250))
+    print(calc_debit(0.3, 2.0, 0.2))
+    print(calc_vidange(3, 0.1, 0.62))
+    res = calc_paroi(1000, 5, 3)
+    print(f"F = {res['F']:.1f} kN à {res['yc']:.2f} m sous la surface")
+    with open("diagramme.png", "wb") as f:
+        f.write(base64.b64decode(res["img"]))
+</script>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const CODE=$("pycode").textContent.trim();
+const FULL=CODE+"\n\n\n"+$("pydemo").textContent.trim()+"\n";
+const BLOCKS=CODE.split("\n\n\n");
+
+/* Coloration syntaxique simple */
+function hl(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")
+   .replace(/(#.*)$/gm,'<i class="c">$1</i>')
+   .replace(/\b(def|return|import|as|if|for|in|raise|from|with|not|print)\b(?![^<]*<\/i>)/g,'<b class="k">$1</b>');
+}
+$("full").innerHTML=hl(FULL);
+$("heroCode").innerHTML=hl(BLOCKS.find(b=>b.includes("def pression_hydro"))+"\n\n\n"+BLOCKS.find(b=>b.includes("def calc_debit")));
+
+/* Navigation */
+function route(){
+  let id=(location.hash||"#accueil").slice(1);
+  if(!$(id)||$(id).tagName!=="SECTION")id="accueil";
+  document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===id));
+  document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+id));
+  window.scrollTo(0,0);
+}
+addEventListener("hashchange",route);route();
+
+/* Définition des calculateurs : [nom, libellé, unité, valeur, 1 = strictement positif] */
+const CALCS=[
+{t:"Pression à une profondeur",fn:"calc_pression",fm:"p = p₀ + ρ·g·h",
+ ex:"Exemple : un réservoir contient 4 m d’eau douce. Quelle pression au fond ?",
+ f:[["rho","ρ, masse volumique","kg/m³",1000,1],["h","h, profondeur","m",4,0],["p0","p₀, pression en surface","kPa",0,0]],
+ o:[["p_hydro","Pression hydrostatique","kPa"],["p_totale","Pression totale","kPa"],["bar","Pression totale","bar"]],src:["pression_hydro","calc_pression"]},
+{t:"Hauteur d’eau depuis une pression",fn:"calc_hauteur",fm:"h = p / (ρ·g)",
+ ex:"Exemple : un manomètre indique 250 kPa sur un réseau d’eau. À quelle hauteur d’eau cela correspond-il ?",
+ f:[["rho","ρ, masse volumique","kg/m³",1000,1],["p","p, pression","kPa",250,0]],
+ o:[["h","Hauteur d’eau","m"],["bar","Pression","bar"]],src:["calc_hauteur"]},
+{t:"Débit et continuité",fn:"calc_debit",fm:"Q = v·A     v₁·A₁ = v₂·A₂",
+ ex:"Exemple : une conduite de 300 mm transporte l’eau à 2 m/s, puis se rétrécit à 200 mm. Quel débit, quelle vitesse après le rétrécissement ?",
+ f:[["D1","D₁, diamètre amont","m",0.3,1],["v1","v₁, vitesse amont","m/s",2,1],["D2","D₂, diamètre aval","m",0.2,1]],
+ o:[["Q_ls","Débit Q","L/s"],["Q_m3h","Débit Q","m³/h"],["v2","Vitesse aval v₂","m/s"]],src:["verifier_positif","calc_debit"]},
+{t:"Vidange par un orifice",fn:"calc_vidange",fm:"v = √(2·g·h)     Q = Cd·A·v",
+ ex:"Exemple : un orifice de 10 cm de diamètre au pied d’un bassin contenant 3 m d’eau, avec Cd = 0,62. Quel débit de fuite ?",
+ f:[["h","h, charge au-dessus de l’orifice","m",3,1],["d","d, diamètre de l’orifice","m",0.1,1],["Cd","Cd, coefficient de débit","",0.62,1]],
+ o:[["v","Vitesse du jet","m/s"],["Q_ls","Débit Q","L/s"],["Q_m3h","Débit Q","m³/h"]],src:["verifier_positif","calc_vidange"]},
+{t:"Poussée sur une paroi verticale",fn:"calc_paroi",fm:"F = ρ·g·h²/2 · b     appliquée à 2h/3",
+ ex:"Exemple : une vanne de 3 m de large retient 5 m d’eau. Quelle force, et à quelle profondeur s’applique-t-elle ?",
+ f:[["rho","ρ, masse volumique","kg/m³",1000,1],["h","h, hauteur d’eau","m",5,1],["b","b, largeur de la paroi","m",3,1]],
+ o:[["F","Force résultante F","kN"],["yc","Centre de poussée (sous la surface)","m"],["pmax","Pression maximale au pied","kPa"]],src:["pression_hydro","force_paroi","calc_paroi"]}
+];
+let cur=0,lastImg="";
+const blk=names=>names.map(n=>BLOCKS.find(b=>b.includes("def "+n+"("))).join("\n\n\n");
+function show(i){
+  cur=i;const c=CALCS[i];
+  document.querySelectorAll("#tabs button").forEach((b,j)=>{b.classList.toggle("on",j===i);b.setAttribute("aria-selected",j===i)});
+  $("ct").textContent=c.t;$("cex").textContent=c.ex;$("cfm").textContent=c.fm;
+  $("cf").innerHTML=c.f.map(f=>`<label>${f[1]}${f[2]?" ("+f[2]+")":""}<input id="in_${f[0]}" type="text" inputmode="decimal" value="${String(f[3]).replace(".",",")}"></label>`).join("")+'<div><button class="btn" type="submit">Calculer</button></div>';
+  $("cm").textContent="";$("cr").style.display="none";
+  $("csrc").innerHTML=hl(blk(c.src));
+}
+$("tabs").innerHTML=CALCS.map((c,i)=>`<button type="button" role="tab" data-i="${i}">${c.t}</button>`).join("");
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)show(+b.dataset.i)});
+show(0);
+
+/* Chargement de Python */
+let py=null,loading=null;
+const status=t=>$("stx").textContent=t;
+function loadPy(){
+  if(py)return Promise.resolve(py);
+  if(!loading)loading=(async()=>{
+    status("Chargement de Python, NumPy et Matplotlib… environ 20 s.");
+    const p=await loadPyodide();
+    await p.loadPackage(["numpy","matplotlib"]);
+    await p.runPythonAsync(CODE);
+    py=p;status("Python prêt");return p;
+  })().catch(e=>{loading=null;status("Échec du chargement de Python. Vérifiez votre connexion puis réessayez.");throw e});
+  return loading;
+}
+const fmt=(v,u)=>v.toLocaleString("fr-FR",{maximumFractionDigits:3})+(u?" "+u:"");
+function msg(id,t,ok){const m=$(id);m.textContent=t;m.className="msg "+(ok?"ok":"err")}
+
+/* Calcul */
+$("cf").addEventListener("submit",async e=>{
+  e.preventDefault();const btn=e.submitter,c=CALCS[cur];$("cr").style.display="none";
+  try{
+    const args=c.f.map(f=>{
+      const raw=$("in_"+f[0]).value.trim().replace(",",".");
+      const v=Number(raw);
+      if(raw===""||!Number.isFinite(v))throw new Error(f[1]+" : entrez un nombre.");
+      if(f[4]&&v<=0)throw new Error(f[1]+" doit être strictement positif.");
+      if(!f[4]&&v<0)throw new Error(f[1]+" ne peut pas être négatif.");
+      return v;
+    });
+    btn.disabled=true;msg("cm","Calcul en cours…",true);
+    const p=await loadPy();
+    const call=c.fn+"("+args.join(", ")+")";
+    const r=JSON.parse(p.runPython("json.dumps("+call+")"));
+    $("ck").innerHTML=c.o.map(o=>`<div><span>${o[1]}</span><strong>${fmt(r[o[0]],o[2])}</strong></div>`).join("");
+    const isImg=!!r.img;
+    $("plot").style.display=$("dlp").style.display=isImg?"":"none";
+    if(isImg){lastImg="data:image/png;base64,"+r.img;$("plot").src=lastImg}
+    const shown=Object.fromEntries(Object.entries(r).filter(([k])=>k!=="img"));
+    $("term").textContent=">>> "+call+"\n"+JSON.stringify(shown).replace(/,"/g,', "').replace(/":/g,'": ');
+    $("cr").style.display="block";msg("cm","Calcul terminé.",true);
+  }catch(err){
+    const t=String(err.message||err);
+    msg("cm",t.includes("ValueError:")?t.split("ValueError:").pop().trim():t,false);
+  }finally{btn.disabled=false}
+});
+$("dl").addEventListener("click",()=>{
+  if(!lastImg)return;
+  const a=document.createElement("a");a.href=lastImg;a.download="diagramme_pressions.png";a.click();
+});
+
+/* Copier et télécharger le code */
+$("cp").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(FULL);msg("cpm"," Code copié.",true)}
+  catch(e){msg("cpm"," Copie impossible : sélectionnez le code manuellement.",false)}
+});
+$("dp").addEventListener("click",()=>{
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([FULL],{type:"text/x-python"}));
+  a.download="fluide_enis.py";a.click();URL.revokeObjectURL(a.href);
+});
+
+/* Contact par mailto */
+$("f3").addEventListener("submit",e=>{
+  e.preventDefault();
+  const n=$("cn").value.trim(),m=$("ce").value.trim(),t=$("cmsg").value.trim();
+  if(!n)return msg("m3","Entrez votre nom.",false);
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m))return msg("m3","Entrez une adresse e-mail valide.",false);
+  if(t.length<10)return msg("m3","Le message doit contenir au moins 10 caractères.",false);
+  location.href="mailto:med.aydi@enis.tn?subject="+encodeURIComponent("Fluide.ENIS – message de "+n)+"&body="+encodeURIComponent(t+"\n\n— "+n+" ("+m+")");
+  msg("m3","Votre application de messagerie s’ouvre avec le message prêt à envoyer.",true);
+});
+</script>
+</body>
+</html>
