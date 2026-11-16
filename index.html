@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fluide.ENIS – Exercices de mécanique des fluides</title>
+<meta name="description" content="Fluide.ENIS : trois problèmes de mécanique des fluides (vanne circulaire, pression d’un plongeur, conduite de remplissage). Saisissez vos données, obtenez les résultats et la correction détaillée.">
+<link rel="icon" href="enis-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bk:#05060a;--navy:#0b1f4d;--navy2:#0f2a66;--sky:#6ec6ff;--tx:#eaf2ff;--mu:#9db4d6;--ln:rgba(110,198,255,.28);--err:#ff8a80;--ok:#7ee0a8;--serif:"Cormorant Garamond",Georgia,serif;--f:"Manrope",system-ui,sans-serif;--m:"JetBrains Mono",ui-monospace,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bk);color:var(--tx);font:16px/1.65 var(--f)}
+a{color:var(--sky)}
+:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+header{position:sticky;top:0;z-index:5;background:rgba(5,6,10,.95);border-bottom:1px solid var(--ln)}
+.bar{max-width:1120px;margin:auto;padding:.6rem 1.2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.6rem;color:var(--tx);text-decoration:none;font:700 1.6rem var(--serif)}
+.brand img{height:40px;width:40px;border-radius:50%}
+.brand i{color:var(--sky);font-style:normal}
+nav{display:flex;gap:.2rem;flex-wrap:wrap;margin-left:auto}
+nav a{color:var(--mu);text-decoration:none;padding:.35rem .75rem;border-bottom:2px solid transparent;font-weight:500;font-size:.93rem}
+nav a:hover{color:var(--tx)}
+nav a.on{color:var(--sky);border-color:var(--sky)}
+main{max-width:1120px;margin:auto;padding:1.5rem 1.2rem 3.5rem}
+section{display:none}
+section.on{display:block}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.1;margin:0}
+h1{font-size:clamp(2.4rem,6vw,4rem);margin-bottom:.9rem}
+h2{font-size:2.2rem;margin-bottom:.4rem}
+h3{font-size:1.4rem;margin-bottom:.5rem}
+p{margin:.3rem 0 .8rem}
+.mu{color:var(--mu)}
+.sm{font-size:.88rem}
+.hero{display:grid;grid-template-columns:90px 1fr;gap:1.5rem;align-items:start;padding:1.5rem 0 1rem}
+.hero img{width:90px;height:90px;border-radius:50%}
+.btn{display:inline-block;background:var(--sky);color:var(--bk);font:700 .95rem var(--f);border:0;border-radius:2px;padding:.65rem 1.3rem;cursor:pointer;text-decoration:none;margin:.2rem .4rem .2rem 0}
+.btn:hover{filter:brightness(1.1)}
+.btn.o{background:transparent;color:var(--sky);border:1px solid var(--sky)}
+.panel{background:#08122b;border:1px solid var(--ln);border-radius:4px;padding:1.2rem;margin-bottom:1.1rem}
+.panel h3{font-size:1.3rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.grid .panel{margin:0}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin:1rem 0 2rem}
+.flow div{border-top:2px solid var(--sky);background:var(--navy);padding:1rem 1.1rem}
+.flow b{font:700 1.5rem var(--serif);display:block}
+.card{display:block;text-decoration:none;color:var(--tx);border-top:2px solid var(--sky)}
+.card:hover{background:var(--navy)}
+.io{font-size:.88rem;color:var(--mu);margin:.2rem 0}
+.io b{color:var(--sky);font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;align-items:start}
+.two>div{min-width:0}
+.fm{font:500 .95rem var(--m);background:#030510;border-left:3px solid var(--sky);padding:.4rem .8rem;margin:.35rem 0;overflow-x:auto;white-space:nowrap}
+label{display:block;font-size:.85rem;color:var(--mu)}
+input{width:100%;margin-top:.2rem;padding:.55rem .65rem;font:1rem var(--m);color:var(--tx);background:#030510;border:1px solid var(--ln);border-radius:2px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin:.8rem 0}
+.kpi{display:grid;gap:.7rem}
+.kpi div{background:var(--navy);border-left:3px solid var(--sky);padding:.55rem 1rem}
+.kpi span{display:block;font-size:.82rem;color:var(--mu)}
+.kpi strong{font:500 1.4rem var(--m)}
+.msg{font-weight:500;margin-top:.5rem}
+.err{color:var(--err)}
+.ok{color:var(--ok)}
+.g{display:grid;grid-template-columns:1fr auto;gap:.5rem;align-items:end;margin-bottom:.6rem}
+.g .btn{margin:0;padding:.55rem 1rem}
+.step{border-left:2px solid var(--ln);padding:.1rem 0 .1rem .9rem;margin-bottom:.8rem}
+.step b{color:var(--sky)}
+.tip{border:1px solid var(--ln);background:#030510;padding:.6rem .8rem;font-size:.9rem;color:var(--mu)}
+svg.sc{width:100%;height:auto;display:block;border:1px solid var(--ln)}
+.team{display:flex;gap:1rem;flex-wrap:wrap}
+.team div{flex:1 1 190px;background:var(--navy);border-top:2px solid var(--sky);padding:.9rem 1rem}
+.team b{font:700 1.3rem var(--serif);display:block}
+footer{border-top:1px solid var(--ln);text-align:center;padding:1.4rem 1rem;color:var(--mu);font-size:.88rem}
+footer img{height:22px;width:22px;border-radius:50%;vertical-align:middle;margin-right:.4rem}
+@media(max-width:860px){.two{grid-template-columns:1fr}.hero{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+<a class="brand" href="#accueil"><img src="enis-logo.png" alt="Logo ENIS"><span>Fluide<i>.ENIS</i></span></a>
+<nav aria-label="Navigation principale">
+<a href="#accueil">Accueil</a><a href="#p1">Vanne circulaire</a><a href="#p2">Plongeur</a><a href="#p3">Conduite</a><a href="#apropos">À propos</a>
+</nav></div></header>
+
+<main>
+<section id="accueil">
+<div class="hero">
+<img src="enis-logo.png" alt="ENIS">
+<div>
+<h1>Résolvez des problèmes de mécanique des fluides, pas à pas</h1>
+<p class="mu">Fluide.ENIS est un outil pour les étudiants et les professeurs. Vous choisissez un problème, vous saisissez vos données, et le site vous donne les résultats chiffrés avec les unités, accompagnés d’une correction détaillée.</p>
+<p><a class="btn" href="#p1">Commencer avec la vanne circulaire</a></p>
+</div></div>
+
+<h2>Comment ça marche</h2>
+<div class="flow">
+<div><b>Entrées</b>Vos données : dimensions, profondeur, masse volumique, durée, vitesse… Chaque valeur est modifiable.</div>
+<div><b>Calcul</b>Les formules du cours sont appliquées dans l’ordre, avec les valeurs numériques à chaque étape.</div>
+<div><b>Sorties</b>Les résultats avec leurs unités, la correction détaillée et un contrôle de cohérence.</div>
+</div>
+
+<h2>Trois problèmes</h2>
+<div class="grid" style="margin-bottom:2rem">
+<a class="panel card" href="#p1"><h3>Vanne circulaire verticale</h3><p class="mu sm">Poussée de l’eau sur une vanne immergée.</p><p class="io"><b>Entrées</b> diamètre D, profondeur du centre yG, masse volumique ρ</p><p class="io"><b>Sorties</b> aire A, poussée F, centre de poussée yp</p></a>
+<a class="panel card" href="#p2"><h3>Pression d’un plongeur</h3><p class="mu sm">Pression subie à une profondeur donnée.</p><p class="io"><b>Entrées</b> profondeur h, masse volumique ρ, pression atmosphérique</p><p class="io"><b>Sorties</b> pression relative et pression absolue</p></a>
+<a class="panel card" href="#p3"><h3>Conduite de remplissage</h3><p class="mu sm">Dimensionnement d’une conduite d’alimentation.</p><p class="io"><b>Entrées</b> volume à remplir, durée, vitesse maximale</p><p class="io"><b>Sorties</b> débit Q, diamètre minimal, diamètre commercial, vitesse réelle</p></a>
+</div>
+
+<h2>Fonctionnalités</h2>
+<div class="grid">
+<div class="panel"><h3>Schéma de l’exercice</h3><p class="mu sm">Un schéma qui suit vos données, téléchargeable en image.</p></div>
+<div class="panel"><h3>Rappel de cours</h3><p class="mu sm">Les formules et le piège fréquent de chaque problème.</p></div>
+<div class="panel"><h3>Nouvelles données</h3><p class="mu sm">Un bouton génère un énoncé différent pour s’entraîner.</p></div>
+<div class="panel"><h3>Résolution guidée</h3><p class="mu sm">Tapez votre réponse, le site vérifie le résultat.</p></div>
+<div class="panel"><h3>Correction détaillée</h3><p class="mu sm">Hypothèses, calculs pas à pas, interprétation.</p></div>
+<div class="panel"><h3>Fiche en image</h3><p class="mu sm">Téléchargez l’exercice complet en PNG pour vos rapports et présentations.</p></div>
+</div>
+</section>
+
+<section id="prob"></section>
+
+<section id="apropos">
+<h2>À propos</h2>
+<div class="panel">
+<p>Fluide.ENIS est un projet du module <b>Algorithme et complexité</b> (GC1, ENIS, 2026/2027), encadré par <b>Mme Sirine Lamin</b>.</p>
+<h3 style="margin-top:1rem">L’équipe</h3>
+<div class="team">
+<div><b>Mohamed Aydi</b><span class="mu">Conception et développement</span></div>
+<div><b>Mockles Dhib</b><span class="mu">Équipe du projet</span></div>
+<div><b>Imen Marouani</b><span class="mu">Équipe du projet</span></div>
+</div>
+<p style="margin-top:1rem">Contact : <a href="mailto:med.aydi@enis.tn">med.aydi@enis.tn</a></p>
+<p class="mu sm">Hypothèses communes : fluide incompressible, accélération de la pesanteur g = 9,81 m/s², pas de pertes de charge. Les diamètres commerciaux sont une série indicative. Vérifiez toujours les résultats avant un dimensionnement réel.</p>
+</div>
+</section>
+</main>
+<footer><img src="enis-logo.png" alt="">Fluide.ENIS · Mohamed Aydi, Mockles Dhib, Imen Marouani · ENIS GC1 · 2026/2027</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const G=9.81;
+const DN=[20,25,32,40,50,63,75,90,110,125,160,200,250,315,400,500];
+const f=(v,d=2)=>v.toLocaleString("fr-FR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const rnd=(a,b,s)=>Math.round((a+Math.random()*(b-a))/s)*s;
+const svg=x=>`<svg class="sc" viewBox="0 0 360 200" width="720" height="400" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" fill="#eaf2ff"><rect width="360" height="200" fill="#05060a"/>${x}</svg>`;
+
+const P={
+p1:{n:"Vanne circulaire verticale",lvl:"Chapitre 2 · Application · Niveau 2",
+ ri:{t:"Vanne circulaire",x:"Un fluide au repos exerce sur une paroi plane immergée une force perpendiculaire à la paroi. Sa valeur est la pression au centre de gravité multipliée par l’aire. Elle s’applique sous le centre de gravité, au centre de poussée.",
+  p:["Aire du disque : A = πD²/4","Poussée : F = ρ·g·yG·A","Centre de poussée : yp = yG + IG/(yG·A), avec IG = πD⁴/64"],
+  z:"yG est la profondeur du centre du disque, pas la hauteur de la vanne. N’utilisez pas bh³/12 pour un disque."},
+ eq:["A = πD²/4","IG = πD⁴/64","F = ρ·g·yG·A","yp = yG + IG/(yG·A)"],
+ in:[["D","Diamètre D","m",1.6,()=>rnd(.8,2,.1)],["yg","Profondeur du centre yG","m",2.8,()=>rnd(1.5,5,.1)],["rho","Masse volumique ρ","kg/m³",1000,()=>1000]],
+ en:v=>`Une vanne circulaire verticale de diamètre <b>D = ${f(v.D,2)} m</b> est entièrement immergée dans de l’eau de masse volumique <b>ρ = ${f(v.rho,0)} kg/m³</b>. Son centre est à la profondeur <b>yG = ${f(v.yg,2)} m</b>. Déterminer la poussée et la profondeur du centre de poussée.`,
+ ck:v=>v.yg<v.D/2?"La vanne doit être entièrement immergée : yG doit être supérieur ou égal à D/2.":"",
+ sc:v=>svg(`<rect x="20" y="40" width="230" height="140" fill="#0f2a66"/><line x1="20" y1="40" x2="250" y2="40" stroke="#6ec6ff" stroke-width="2"/><rect x="250" y="20" width="14" height="160" fill="#9db4d6"/><circle cx="257" cy="110" r="30" fill="#6ec6ff" stroke="#eaf2ff" stroke-width="2"/><circle cx="257" cy="110" r="3" fill="#05060a"/><line x1="205" y1="40" x2="205" y2="110" stroke="#eaf2ff" stroke-dasharray="4"/><line x1="205" y1="110" x2="257" y2="110" stroke="#eaf2ff" stroke-dasharray="4"/><text x="211" y="80">yG = ${f(v.yg,2)} m</text><line x1="295" y1="80" x2="295" y2="140" stroke="#eaf2ff"/><text x="301" y="114">D = ${f(v.D,2)} m</text><text x="28" y="168">ρ = ${f(v.rho,0)} kg/m³</text><text x="28" y="32">Surface libre</text>`),
+ calc:v=>{const A=Math.PI*v.D**2/4,F=v.rho*G*v.yg*A,I=Math.PI*v.D**4/64,yp=v.yg+I/(v.yg*A);
+  return{out:[["Aire A",A,"m²",4],["Poussée F",F,"N",0],["Centre de poussée yp",yp,"m",4]],
+  steps:[["Hypothèses","Fluide au repos et incompressible, vanne verticale entièrement immergée, pression relative.",""],
+   ["Aire",`A = πD²/4 = π × ${f(v.D,2)}² / 4`,`A = ${f(A,4)} m²`],
+   ["Poussée",`F = ρ·g·yG·A = ${f(v.rho,0)} × 9,81 × ${f(v.yg,2)} × ${f(A,4)}`,`F = ${f(F,0)} N`],
+   ["Inertie centrale",`IG = πD⁴/64`,`IG = ${f(I,4)} m⁴`],
+   ["Centre de poussée",`yp = yG + IG/(yG·A) = ${f(v.yg,2)} + ${f(I,4)} / (${f(v.yg,2)} × ${f(A,4)})`,`yp = ${f(yp,4)} m`]],
+  ctrl:`yp > yG : la poussée s’applique ${f((yp-v.yg)*1000,1)} mm sous le centre du disque. Cet écart diminue quand la vanne est plus profonde.`}}},
+
+p2:{n:"Pression d’un plongeur",lvl:"Chapitre 2 · Application · Niveau 1",
+ ri:{t:"Relation fondamentale de l’hydrostatique",x:"Un plongeur descend dans l’eau : plus il s’enfonce, plus la pression augmente. Elle croît linéairement avec la profondeur.",
+  p:["Pression relative : p = ρ·g·h","Pression absolue : pabs = patm + ρ·g·h","g = 9,81 m/s² ; h est la profondeur sous la surface libre"],
+  z:"patm est donnée en kPa : convertissez en Pa (× 1000) avant d’additionner."},
+ eq:["p = ρ·g·h","pabs = patm + ρ·g·h"],
+ in:[["h","Profondeur h","m",12,()=>rnd(5,40,1)],["rho","Masse volumique ρ","kg/m³",1030,()=>[1000,1025,1030][Math.floor(Math.random()*3)]],["pa","Pression atmosphérique patm","kPa",101.3,()=>101.3]],
+ en:v=>`Un plongeur descend à la profondeur <b>h = ${f(v.h,1)} m</b> dans de l’eau de mer de masse volumique <b>ρ = ${f(v.rho,0)} kg/m³</b>. La pression atmosphérique est <b>patm = ${f(v.pa,1)} kPa</b>. Déterminer la pression relative puis la pression absolue.`,
+ ck:v=>"",
+ sc:v=>svg(`<rect x="20" y="50" width="320" height="130" fill="#0f2a66"/><line x1="20" y1="50" x2="340" y2="50" stroke="#6ec6ff" stroke-width="2"/><text x="26" y="20">patm = ${f(v.pa,1)} kPa</text><path d="M120 24v20M180 24v20M240 24v20" stroke="#9db4d6" stroke-width="2"/><circle cx="230" cy="140" r="9" fill="#eaf2ff"/><text x="244" y="144">plongeur</text><line x1="150" y1="50" x2="150" y2="140" stroke="#eaf2ff" stroke-dasharray="4"/><line x1="150" y1="140" x2="221" y2="140" stroke="#eaf2ff" stroke-dasharray="4"/><text x="40" y="100">h = ${f(v.h,1)} m</text><text x="28" y="170">ρ = ${f(v.rho,0)} kg/m³</text>`),
+ calc:v=>{const pr=v.rho*G*v.h,pb=v.pa*1000,pab=pb+pr;
+  return{out:[["Pression relative p",pr,"Pa",0],["Pression absolue pabs",pab,"Pa",0]],
+  steps:[["Hypothèses","Fluide incompressible et au repos, masse volumique constante, pression uniforme à la surface.",""],
+   ["Pression relative",`p = ρ·g·h = ${f(v.rho,0)} × 9,81 × ${f(v.h,1)}`,`p = ${f(pr,0)} Pa`],
+   ["Pression absolue",`pabs = patm + p = ${f(pb,0)} + ${f(pr,0)}`,`pabs = ${f(pab,0)} Pa`]],
+  ctrl:`La pression absolue vaut ${f(pab/pb,2)} fois la pression atmosphérique, soit ${f(pab/1000,1)} kPa. Environ 10 m d’eau ajoutent une atmosphère.`}}},
+
+p3:{n:"Dimensionner une conduite de remplissage",lvl:"Chapitre 3 · Application · Niveau 2",
+ ri:{t:"Dimensionnement par le débit",x:"Il faut livrer un volume en un temps donné sans dépasser une vitesse maximale dans la conduite. Cela fixe le débit, puis le diamètre minimal.",
+  p:["Débit : Q = V/t, avec t en secondes","Section minimale : Amin = Q/Vmax, puis D = √(4A/π)","On arrondit ensuite au diamètre commercial supérieur"],
+  z:"Ne pas oublier la conversion des heures en secondes (× 3600)."},
+ eq:["Q = V/t","A = Q/Vmax","D = √(4A/π)"],
+ in:[["V","Volume à remplir V","m³",340,()=>rnd(100,800,10)],["t","Durée t","h",9,()=>rnd(4,12,1)],["vm","Vitesse maximale Vmax","m/s",1.2,()=>rnd(1,2,.2)]],
+ en:v=>`On doit remplir un volume de <b>V = ${f(v.V,0)} m³</b> en <b>${f(v.t,1)} h</b>, sans dépasser une vitesse maximale de <b>${f(v.vm,1)} m/s</b> dans la conduite d’amenée. Déterminer le débit requis et le diamètre minimal de la conduite.`,
+ ck:v=>"",
+ sc:v=>svg(`<rect x="170" y="40" width="170" height="140" fill="none" stroke="#9db4d6" stroke-width="3"/><rect x="172" y="90" width="166" height="88" fill="#0f2a66"/><line x1="172" y1="90" x2="338" y2="90" stroke="#6ec6ff" stroke-width="2"/><rect x="20" y="115" width="152" height="14" fill="#6ec6ff"/><path d="M60 100l30 22-30 22" fill="none" stroke="#eaf2ff" stroke-width="2" transform="translate(0,-15)"/><text x="24" y="104">Conduite : D = ?</text><text x="24" y="150">Vmax = ${f(v.vm,1)} m/s</text><text x="180" y="32">V = ${f(v.V,0)} m³ en t = ${f(v.t,1)} h</text>`),
+ calc:v=>{const Q=v.V/(v.t*3600),A=Q/v.vm,D=Math.sqrt(4*A/Math.PI),dn=DN.find(d=>d/1000>=D),vr=dn?Q/(Math.PI*(dn/1000)**2/4):NaN;
+  return{out:[["Débit requis Q",Q,"m³/s",6],["Diamètre minimal D",D,"m",4],["Diamètre commercial retenu",dn||NaN,"mm",0],["Vitesse réelle",vr,"m/s",3]],
+  steps:[["Hypothèses","Débit constant, conduite pleine, vitesse limitée par une consigne de réseau.",""],
+   ["Débit requis",`Q = V/t = ${f(v.V,0)} / (${f(v.t,1)} × 3600)`,`Q = ${f(Q,6)} m³/s (${f(Q*1000,2)} L/s)`],
+   ["Section minimale",`Amin = Q/Vmax = ${f(Q,6)} / ${f(v.vm,1)}`,`Amin = ${f(A,6)} m²`],
+   ["Diamètre minimal",`D = √(4A/π)`,`D = ${f(D,4)} m = ${f(D*1000,1)} mm`],
+   ["Diamètre commercial",dn?`Premier diamètre normalisé supérieur à ${f(D*1000,1)} mm dans la série indicative.`:"Aucun diamètre de la série n’est assez grand.",dn?`DN = ${dn} mm`:""]],
+  ctrl:dn?`Avec DN ${dn} mm, la vitesse réelle est ${f(vr,3)} m/s ${vr<=v.vm?"≤":">"} ${f(v.vm,1)} m/s : ${vr<=v.vm?"la condition est respectée.":"la condition n’est pas respectée."}`:"Choisissez une vitesse maximale plus grande ou une durée plus longue."}}}
+};
+
+let cur=null,dim=null;
+const val=()=>{const o={};P[cur].in.forEach(i=>{const raw=$("i_"+i[0]).value.trim().replace(",",".");const v=Number(raw);
+  if(raw===""||!Number.isFinite(v))throw new Error(i[1]+" : entrez un nombre.");
+  if(v<=0)throw new Error(i[1]+" doit être strictement positif.");o[i[0]]=v});
+  const e=P[cur].ck(o);if(e)throw new Error(e);return o};
+const msg=(t,ok)=>{const m=$("msg");m.textContent=t;m.className="msg "+(ok?"ok":"err")};
+
+function render(id){
+  cur=id;const p=P[id];
+  $("prob").innerHTML=`<div id="fiche"><h2>${p.n}</h2><p class="mu sm">${p.lvl}</p>
+<div class="two"><div>
+<div class="panel"><h3>Énoncé et entrées</h3><p id="en"></p>
+<div class="fields">${p.in.map(i=>`<label>${i[1]} (${i[2]})<input id="i_${i[0]}" type="text" inputmode="decimal" value="${String(i[3]).replace(".",",")}"></label>`).join("")}</div>
+<div class="nocap"><button class="btn" id="go" type="button">Calculer</button><button class="btn o" id="nw" type="button">Nouvelles données</button></div>
+<div class="msg" id="msg" aria-live="polite"></div></div>
+<div class="panel"><h3>Schéma de l’exercice</h3><div id="sch"></div><p class="nocap"><button class="btn o" id="dsv" type="button">Télécharger le schéma (PNG)</button></p></div>
+<div class="panel"><h3>Rappel de cours</h3><p><b>${p.ri.t}</b></p><p class="mu">${p.ri.x}</p>${p.ri.p.map(x=>`<div class="fm">${x}</div>`).join("")}<div class="tip" style="margin-top:.6rem"><b>Piège fréquent.</b> ${p.ri.z}</div></div>
+</div><div>
+<div class="panel"><h3>Sorties : résultats</h3><div id="res"><p class="mu sm">Les résultats apparaissent ici après avoir cliqué sur Calculer.</p></div></div>
+<div class="panel"><h3>Équations utiles</h3>${p.eq.map(x=>`<div class="fm">${x}</div>`).join("")}</div>
+<div class="panel nocap"><h3>Résolution guidée</h3><p class="mu sm">Calculez de votre côté, puis vérifiez votre réponse (tolérance de 1 %).</p><div id="gd"></div><button class="btn" id="ga" type="button">Tout vérifier</button><button class="btn o" id="sc" type="button">Voir la correction</button></div>
+<div class="panel" id="cor" style="display:none"><h3>Correction détaillée</h3><div id="cb"></div></div>
+</div></div>
+<p class="nocap"><button class="btn" id="dfi" type="button">Télécharger la fiche en image (PNG)</button><span class="msg" id="dm"></span></p></div>`;
+  $("gd").innerHTML=p.calc(defv()).out.map((o,k)=>`<div class="g"><label>${o[0]} (${o[2]})<input id="g_${k}" type="text" inputmode="decimal" placeholder="Votre réponse"><span class="msg sm" id="gm_${k}"></span></label><button class="btn o" data-k="${k}" type="button">Vérifier</button></div>`).join("");
+  upd();
+  $("prob").oninput=e=>{if(e.target.id.startsWith("i_")){upd();reset()}};
+  $("go").onclick=show;$("sc").onclick=show;$("nw").onclick=newData;$("ga").onclick=()=>p.calc(defv()).out.forEach((_,k)=>chk(k));
+  $("gd").onclick=e=>{const b=e.target.closest("button");if(b)chk(+b.dataset.k)};
+  $("dsv").onclick=dlSvg;$("dfi").onclick=dlFiche;
+}
+function defv(){const o={};P[cur].in.forEach(i=>{const e=$("i_"+i[0]);o[i[0]]=e?Number(e.value.replace(",",".")):i[3]});return o}
+function upd(){const v=defv();if(Object.values(v).every(Number.isFinite)&&Object.values(v).every(x=>x>0)){$("en").innerHTML=P[cur].en(v);$("sch").innerHTML=P[cur].sc(v)}}
+function reset(){$("res").innerHTML='<p class="mu sm">Les données ont changé : cliquez sur Calculer.</p>';$("cor").style.display="none";msg("",true)}
+function show(){
+  try{const v=val(),r=P[cur].calc(v);
+    $("res").innerHTML='<div class="kpi">'+r.out.map(o=>`<div><span>${o[0]}</span><strong>${f(o[1],o[3])} ${o[2]}</strong></div>`).join("")+"</div>";
+    $("cb").innerHTML=r.steps.map((s,i)=>`<div class="step"><b>${i+1}. ${s[0]}</b><br>${s[1]}${s[2]?`<div class="fm">${s[2]}</div>`:""}</div>`).join("")+`<div class="tip"><b>Interprétation et contrôle.</b> ${r.ctrl}</div>`;
+    $("cor").style.display="block";msg("Calcul terminé.",true);
+  }catch(e){msg(e.message,false)}
+}
+function newData(){
+  P[cur].in.forEach(i=>{$("i_"+i[0]).value=String(i[4]()).replace(".",",")});
+  document.querySelectorAll('[id^="g_"]').forEach(e=>e.value="");document.querySelectorAll('[id^="gm_"]').forEach(e=>e.textContent="");
+  upd();reset();
+}
+function chk(k){
+  const m=$("gm_"+k),raw=$("g_"+k).value.trim().replace(",",".").replace(/\s/g,"");
+  try{const v=val(),t=P[cur].calc(v).out[k][1],a=Number(raw);
+    if(raw===""||!Number.isFinite(a)){m.textContent="Entrez un nombre.";m.className="msg sm err";return}
+    const okk=Math.abs(a-t)<=Math.abs(t)*0.01;
+    m.textContent=okk?"Correct.":"Pas tout à fait : vérifiez les unités et les conversions.";m.className="msg sm "+(okk?"ok":"err");
+  }catch(e){m.textContent=e.message;m.className="msg sm err"}
+}
+function save(url,name){const a=document.createElement("a");a.href=url;a.download=name;a.click()}
+function dlSvg(){
+  const s=new XMLSerializer().serializeToString($("sch").querySelector("svg")),im=new Image();
+  im.onload=()=>{const c=document.createElement("canvas");c.width=1080;c.height=600;c.getContext("2d").drawImage(im,0,0,1080,600);save(c.toDataURL("image/png"),"schema_"+cur+".png")};
+  im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
+}
+function dlFiche(){
+  if(typeof html2canvas==="undefined"){$("dm").textContent=" Téléchargement indisponible : vérifiez votre connexion internet.";$("dm").className="msg err";return}
+  html2canvas($("fiche"),{backgroundColor:"#05060a",scale:2,ignoreElements:e=>e.classList&&e.classList.contains("nocap")})
+   .then(c=>{save(c.toDataURL("image/png"),"fiche_"+cur+".png");$("dm").textContent="";})
+   .catch(()=>{$("dm").textContent=" Échec du téléchargement.";$("dm").className="msg err"});
+}
+
+function route(){
+  let id=(location.hash||"#accueil").slice(1);
+  if(!P[id]&&id!=="accueil"&&id!=="apropos")id="accueil";
+  const sec=P[id]?"prob":id;
+  document.querySelectorAll("main>section").forEach(s=>s.classList.toggle("on",s.id===sec));
+  document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+id));
+  if(P[id])render(id);
+  window.scrollTo(0,0);
+}
+addEventListener("hashchange",route);route();
+</script>
+</body>
+</html>
